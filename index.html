@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dummy Hacker Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            position: relative;
+            height: 100vh;
+        }
+
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .matrix-canvas {
+            width: 100%;
+            height: 100%;
+            opacity: 0.4;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            z-index: 10;
+            position: relative;
+        }
+
+        .hacking-box {
+            background-color: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+
+        .title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff00;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 10px #00ff00; }
+            to { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            background-color: #000;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            width: 100%;
+            font-family: inherit;
+            border-radius: 4px;
+            outline: none;
+            box-shadow: inset 0 0 5px rgba(0, 255, 0, 0.2);
+        }
+
+        input[type="text"]::placeholder {
+            color: #006600;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        .hack-btn {
+            background-color: #000;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 12px 30px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hack-btn:hover {
+            background-color: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        .hack-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            margin-bottom: 15px;
+            height: 30px;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+            line-height: 1.4;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background-color: #003300;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #006600;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00cc00);
+            width: 0%;
+            transition: width 0.8s ease;
+            box-shadow: 0 0 15px #00ff00;
+            animation: progressPulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes progressPulse {
+            from { box-shadow: 0 0 15px #00ff00; }
+            to { box-shadow: 0 0 25px #00ff00, 0 0 35px #00ff00; }
+        }
+
+        .target-info {
+            font-size: 12px;
+            color: #ffff00;
+            text-shadow: 0 0 5px #ffff00;
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            display: none;
+            font-size: 20px;
+            color: #00ff00;
+            text-shadow: 0 0 15px #00ff00;
+            margin-top: 20px;
+            animation: successBlink 0.8s infinite;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        @keyframes successBlink {
+            0%, 50% { 
+                opacity: 1; 
+                text-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00;
+            }
+            51%, 100% { 
+                opacity: 0.7; 
+                text-shadow: 0 0 10px #00ff00;
+            }
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #00ff00;
+            opacity: 0.7;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .terminal-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        .terminal-line {
+            position: absolute;
+            color: #00ff00;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+            animation: scrollLeft 15s linear infinite;
+        }
+
+        @keyframes scrollLeft {
+            from { transform: translateX(100vw); }
+            to { transform: translateX(-100%); }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg">
+        <canvas class="matrix-canvas" id="matrixCanvas"></canvas>
+    </div>
+    
+    <div class="terminal-lines" id="terminalLines"></div>
+    
+    <div class="container">
+        <div class="hacking-box">
+            <div class="title">◄ ADVANCED PENETRATION SYSTEM ►</div>
+            
+            <div id="inputSection">
+                <div class="input-group">
+                    <input type="text" id="targetInput" placeholder="Enter target: mobile number, email or name" maxlength="50">
+                </div>
+                <button class="hack-btn" onclick="startHacking()">► INITIATE BREACH ◄</button>
+            </div>
+
+            <div class="progress-container" id="progressContainer">
+                <div class="target-info" id="targetInfo"></div>
+                <div class="progress-text" id="progressText">Initializing attack vector...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                ⚡ TARGET COMPROMISED ⚡
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">Made with ❤️ by sauravhhh</div>
+
+    <script>
+        // Advanced Matrix Rain Effect with Canvas
+        function initMatrixRain() {
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const columns = Math.floor(canvas.width / 20);
+            const drops = Array(columns).fill(0);
+            const chars = '10';
+            
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#00ff00';
+                ctx.font = '15px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    const x = i * 20;
+                    const y = drops[i] * 20;
+                    
+                    ctx.fillText(char, x, y);
+                    
+                    if (y > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+            
+            setInterval(drawMatrix, 50);
+        }
+
+        // Terminal lines effect
+        function createTerminalLines() {
+            const terminalLines = document.getElementById('terminalLines');
+            const hackingCommands = [
+                'root@blackhat:~# nmap -sS -O target_system',
+                'root@blackhat:~# hydra -l admin -P passwords.txt ssh://target',
+                'root@blackhat:~# sqlmap -u "http://target.com" --dbs',
+                'root@blackhat:~# metasploit > exploit/multi/handler',
+                'root@blackhat:~# john --wordlist=rockyou.txt shadow.txt',
+                'root@blackhat:~# aircrack-ng -w wordlist capture.cap',
+                'root@blackhat:~# nc -lvp 4444',
+                'root@blackhat:~# python exploit.py --target 192.168.1.100'
+            ];
+            
+            function addTerminalLine() {
+                const line = document.createElement('div');
+                line.className = 'terminal-line';
+                line.textContent = hackingCommands[Math.floor(Math.random() * hackingCommands.length)];
+                line.style.top = Math.random() * (window.innerHeight - 50) + 'px';
+                line.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                terminalLines.appendChild(line);
+                
+                setTimeout(() => {
+                    if (line.parentNode) {
+                        line.parentNode.removeChild(line);
+                    }
+                }, 20000);
+            }
+            
+            setInterval(addTerminalLine, 3000);
+        }
+
+        // Function to identify input type
+        function identifyInputType(input) {
+            const mobilePattern = /^(\+?\d{1,3}[-\s]?)?\d{10}$/;
+            const emailPattern = /^[\w.-]+@[\w.-]+\.\w{2,}$/;
+            
+            if (mobilePattern.test(input.replace(/\s+/g, ''))) {
+                return 'mobile';
+            } else if (emailPattern.test(input)) {
+                return 'email';
+            } else {
+                return 'name';
+            }
+        }
+
+        // Get hacking steps based on target type
+        function getHackingSteps(targetType, target) {
+            const steps = {
+                mobile: [
+                    "Initializing SS7 network infiltration...",
+                    "Accessing telecom carrier database...",
+                    "Locating SIM card registration details...",
+                    "Intercepting SMS/call logs...",
+                    "Extracting contact list and messages...",
+                    "Triangulating GPS location data...",
+                    "Bypassing 2FA authentication...",
+                    "Accessing social media accounts linked to number...",
+                    "Downloading WhatsApp backup data...",
+                    "Extracting call recordings and voicemails...",
+                    "Installing remote access trojan...",
+                    "Mobile device fully compromised!"
+                ],
+                email: [
+                    "Scanning email server vulnerabilities...",
+                    "Performing dictionary attack on password...",
+                    "Bypassing two-factor authentication...",
+                    "Accessing email server database...",
+                    "Extracting inbox and sent messages...",
+                    "Downloading email attachments...",
+                    "Accessing linked social media accounts...",
+                    "Retrieving password recovery questions...",
+                    "Infiltrating cloud storage accounts...",
+                    "Extracting personal documents and photos...",
+                    "Installing keylogger for future access...",
+                    "Email account completely compromised!"
+                ],
+                name: [
+                    "Launching OSINT reconnaissance...",
+                    "Scanning social media profiles...",
+                    "Extracting personal information...",
+                    "Cross-referencing public databases...",
+                    "Finding associated email addresses...",
+                    "Locating phone numbers and addresses...",
+                    "Accessing employment records...",
+                    "Retrieving family and contact information...",
+                    "Finding linked financial accounts...",
+                    "Extracting browsing history and preferences...",
+                    "Creating comprehensive digital profile...",
+                    "Identity completely mapped and compromised!"
+                ]
+            };
+            
+            return steps[targetType] || steps.name;
+        }
+
+        function startHacking() {
+            const targetInput = document.getElementById('targetInput');
+            const target = targetInput.value.trim();
+            
+            if (!target) {
+                alert('Please enter a target!');
+                return;
+            }
+
+            const targetType = identifyInputType(target);
+            const hackingSteps = getHackingSteps(targetType, target);
+            
+            // Set target info
+            const targetInfo = document.getElementById('targetInfo');
+            let targetTypeText = '';
+            switch(targetType) {
+                case 'mobile':
+                    targetTypeText = 'TARGET TYPE: MOBILE NUMBER';
+                    break;
+                case 'email':
+                    targetTypeText = 'TARGET TYPE: EMAIL ADDRESS';
+                    break;
+                case 'name':
+                    targetTypeText = 'TARGET TYPE: PERSONAL IDENTITY';
+                    break;
+            }
+            targetInfo.textContent = `${targetTypeText} | TARGET: ${target}`;
+
+            // Hide input section and show progress
+            document.getElementById('inputSection').style.display = 'none';
+            document.getElementById('progressContainer').style.display = 'block';
+
+            let currentStep = 0;
+            const progressText = document.getElementById('progressText');
+            const progressFill = document.getElementById('progressFill');
+
+            function updateProgress() {
+                if (currentStep < hackingSteps.length) {
+                    progressText.textContent = hackingSteps[currentStep];
+                    progressFill.style.width = ((currentStep + 1) / hackingSteps.length) * 100 + '%';
+                    currentStep++;
+                    
+                    // More realistic timing - slower for more complex operations
+                    const delay = currentStep < 3 ? 1000 : 
+                                 currentStep < 6 ? 1500 : 
+                                 currentStep < 9 ? 2000 : 2500;
+                    
+                    setTimeout(updateProgress, delay + Math.random() * 1000);
+                } else {
+                    // Show success message
+                    setTimeout(() => {
+                        document.getElementById('progressContainer').style.display = 'none';
+                        document.getElementById('successMessage').style.display = 'block';
+                        
+                        // Reset after 5 seconds
+                        setTimeout(resetTool, 5000);
+                    }, 1000);
+                }
+            }
+
+            updateProgress();
+        }
+
+        function resetTool() {
+            document.getElementById('inputSection').style.display = 'block';
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('targetInput').value = '';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('targetInfo').textContent = '';
+        }
+
+        // Initialize effects on page load
+        window.onload = function() {
+            initMatrixRain();
+            createTerminalLines();
+        };
+
+        // Handle Enter key press
+        document.getElementById('targetInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                startHacking();
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const canvas = document.getElementById('matrixCanvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

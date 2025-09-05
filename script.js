@@ -111,7 +111,10 @@ function updateTerminalTime() {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('terminalTime').textContent = `${hours}:${minutes}:${seconds}`;
+    const timeString = `${hours}.${minutes}.${seconds}`;
+    
+    document.getElementById('terminalTime').textContent = timeString;
+    document.getElementById('terminalTime2').textContent = timeString;
 }
 
 setInterval(updateTerminalTime, 1000);
@@ -483,4 +486,41 @@ document.getElementById('hackForm').addEventListener('submit', function(e) {
                 document.getElementById('resultLocation').textContent = location;
                 document.getElementById('resultISP').textContent = provider;
                 document.getElementById('resultMethod').textContent = attackMethod;
-           
+                document.getElementById('resultStatus').textContent = 'SUCCESS';
+                document.getElementById('resultVulns').textContent = vulns;
+                document.getElementById('resultPorts').textContent = ports;
+                document.getElementById('resultTime').textContent = `${Math.floor(elapsed / 1000)} seconds`;
+                document.getElementById('exploitData').textContent = exploitData;
+                
+                // Show results panel
+                document.getElementById('resultsPanel').classList.remove('hidden');
+                
+                // Play success sound
+                playSound('success');
+                
+                // Add final terminal messages
+                                      addTerminalLine('Attack completed successfully!', 'terminal-success');
+                addTerminalLine('Results saved to database.', 'terminal-success');
+                addTerminalLine('Connection terminated.', 'terminal-warning');
+                
+                // Reset progress bar
+                setTimeout(() => {
+                    document.getElementById('systemProgress').style.width = '0%';
+                }, 2000);
+            }, 1000);
+        }
+    }, 100);
+    
+    // Display terminal messages with delays
+      messages.forEach(msg => {
+        setTimeout(() => {
+            addTerminalLine(msg.text, msg.className || '');
+        }, msg.delay);
+    });
+});
+
+// Window resize handler for matrix canvas
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});

@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&display=swap');
+
+body {
+    font-family: 'Fira Code', monospace;
+    background: #0a0a0a;
+    color: #00ff00;
+    overflow-x: hidden;
+}
+
+.terminal {
+    background: rgba(0, 20, 0, 0.7);
+    border: 1px solid #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+    border-radius: 5px;
+}
+
+.terminal-header {
+    background: #003300;
+    border-bottom: 1px solid #00ff00;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.terminal-body {
+    padding: 15px;
+    height: 400px;
+    overflow-y: auto;
+}
+
+.terminal-line {
+    margin-bottom: 8px;
+    display: flex;
+}
+
+.terminal-prompt {
+    color: #00ff00;
+    margin-right: 8px;
+}
+
+.terminal-text {
+    color: #cccccc;
+}
+
+.terminal-success {
+    color: #00ff00;
+}
+
+.terminal-error {
+    color: #ff3333;
+}
+
+.terminal-warning {
+    color: #ffcc00;
+}
+
+.typing-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 18px;
+    background-color: #00ff00;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.glow {
+    text-shadow: 0 0 5px #00ff00;
+}
+
+.button-hack {
+    background: linear-gradient(45deg, #003300, #006600);
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    transition: all 0.3s;
+}
+
+.button-hack:hover {
+    background: linear-gradient(45deg, #006600, #009900);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.progress-bar {
+    height: 5px;
+    background: #003300;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00, #00cc00);
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.data-label {
+    color: #00ff00;
+}
+
+.data-value {
+    color: #cccccc;
+}
+
+.matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+.input-hack {
+    background: rgba(0, 20, 0, 0.5);
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 8px 12px;
+    font-family: 'Fira Code', monospace;
+}
+
+.input-hack:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.hack-result {
+    background: rgba(0, 30, 0, 0.7);
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hack-result::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
